@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MSAccessViewer": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\kfork\\OneDrive\\Misc\\Visual_Studio\\MSAccessViewer\\test_db.accdb"
+    }
+  }
+}

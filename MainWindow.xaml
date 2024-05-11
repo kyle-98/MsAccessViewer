@@ -1,0 +1,84 @@
+﻿<Window x:Class="MSAccessViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MSAccessViewer"
+        mc:Ignorable="d"
+        Title="MS Access Viewer" Height="450" Width="800">
+
+
+     <TabControl Name="ViewController">
+          <TabControl.ItemContainerStyle>
+               <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Visibility" Value="Visible"/>
+               </Style>
+          </TabControl.ItemContainerStyle>
+
+          <!--Main page of application-->
+          <TabItem Header="MainPage" Name="MainPage">
+               <Grid>
+                    <Grid.ColumnDefinitions>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="5*"/>
+                         <ColumnDefinition Width="5*"/>
+                         <ColumnDefinition Width="5*"/>
+                         <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                         <RowDefinition Height="*"/>
+                         <RowDefinition Height="6*"/>
+                         <RowDefinition Height="3*"/>
+                         <RowDefinition Height="3*"/>
+                         <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="1" Grid.Column="2">
+                         <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top"/>
+                         <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
+                         <Button Name="TableViewerBtn" Grid.Row="1" Grid.Column="2" Content="View Table Data" VerticalAlignment="Top" Margin="0,0,0,0" Padding="10, 5" HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+               </Grid>
+          </TabItem>
+
+          <!--Getting field names of a table page-->
+          <TabItem Header="FieldNames" Name="FieldNames">
+               <Grid>
+                    <Grid.ColumnDefinitions>
+                         <ColumnDefinition Width="0.7*"/>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="0.2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                         <RowDefinition Height="0.8*"/>
+                         <RowDefinition Height="5*"/>
+                         <RowDefinition Height="0.8*"/>
+                    </Grid.RowDefinitions>
+                    <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+                         <ListView.View>
+                              <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False">
+                                   <GridViewColumn DisplayMemberBinding="{Binding FieldName}" Width="Auto">
+                                        <GridViewColumnHeader Content="Field Names" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                   </GridViewColumn>
+                                   <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
+                                        <GridViewColumnHeader Content="Data Type" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                   </GridViewColumn>
+                                   <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
+                                        <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                   </GridViewColumn>
+                              </GridView>
+                         </ListView.View>
+                    </ListView>
+                    <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="FindFieldsBackBtn_Click"/>
+                    <!--<TextBox Name="TablenameInputBox" HorizontalAlignment="Center" TextWrapping="NoWrap" Margin="0,0,0,0" Text="" VerticalAlignment="Top" Width="171" Grid.Row="1" Grid.Column="0"/> -->
+                    <ComboBox Name="TablenamesCombobox" SelectionChanged="TablenamesCombobox_SelectionChanged" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top" Width="171"/>
+
+               </Grid>
+          </TabItem>
+
+     </TabControl>
+
+
+
+
+</Window>
