@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="MS Access Viewer" Height="450" Width="800">
 
+     <Window.Resources>
+          
+     </Window.Resources>
 
      <TabControl Name="ViewController">
           <TabControl.ItemContainerStyle>
@@ -57,7 +60,8 @@
                     <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                          <ListView.View>
                               <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False">
-                                   
+
+                                   <!--field name column -->
                                    <GridViewColumn DisplayMemberBinding="{Binding FieldName}" Width="Auto">
                                         <GridViewColumn.HeaderContainerStyle>
                                              <Style TargetType="GridViewColumnHeader">
@@ -66,7 +70,8 @@
                                         </GridViewColumn.HeaderContainerStyle>
                                         <GridViewColumnHeader Content="Field Names" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
-                                        
+
+                                   <!--datatype column -->
                                    <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
                                         <GridViewColumn.HeaderContainerStyle>
                                              <Style TargetType="GridViewColumnHeader">
@@ -76,6 +81,7 @@
                                         <GridViewColumnHeader Content="Data Type" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
                                    
+                                   <!--Ordinal position column -->
                                    <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
                                         <GridViewColumn.HeaderContainerStyle>
                                              <Style TargetType="GridViewColumnHeader">
@@ -84,6 +90,27 @@
                                         </GridViewColumn.HeaderContainerStyle>
                                         <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
+
+                                   <!--is nullable column-->
+                                   <GridViewColumn DisplayMemberBinding="{Binding IsNullable}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                   </GridViewColumn>
+
+                                   <!--description column-->
+                                   <GridViewColumn DisplayMemberBinding="{Binding Description}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Column Description" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                   </GridViewColumn>
+
                               </GridView>
                          </ListView.View>
                     </ListView>

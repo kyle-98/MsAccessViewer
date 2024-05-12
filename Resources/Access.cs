@@ -17,13 +17,17 @@ namespace MSAccessViewer.Resources
           public string FieldName { get; set; }
           public string DataType { get; set; }
           public string OrdinalPosition { get; set; }
+          public string IsNullable { get; set; }
+          public string Description { get; set; }
 
 
-          public AccessField(string fieldname, string datatype, string ordposition)
+          public AccessField(string fieldname, string datatype, string ordposition, string isnullable, string description)
           {
                FieldName = fieldname;
                DataType = datatype;
                OrdinalPosition = ordposition;
+               IsNullable = isnullable;
+               Description = description;
           }
 
           public int CompareTo(AccessField other)
@@ -95,7 +99,7 @@ namespace MSAccessViewer.Resources
                {
                     foreach (DataRow row in schema.Rows)
                     {
-                         if (row != null) { fields.Add(new AccessField(row["COLUMN_NAME"].ToString(), GetDataTypeName(Convert.ToInt32(row["DATA_TYPE"])), row["ORDINAL_POSITION"].ToString())); }
+                         if (row != null) { fields.Add(new AccessField(row["COLUMN_NAME"].ToString(), GetDataTypeName(Convert.ToInt32(row["DATA_TYPE"])), row["ORDINAL_POSITION"].ToString(), row["IS_NULLABLE"].ToString(), row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : row["DESCRIPTION"].ToString())); }
                     }
                }
                return fields;
