@@ -8,7 +8,7 @@
         Title="MS Access Viewer" Height="450" Width="800">
 
      <Window.Resources>
-          
+
      </Window.Resources>
 
      <TabControl Name="ViewController">
@@ -36,7 +36,7 @@
                          <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="1" Grid.Column="2">
-                         <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top"/>
+                         <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top" Click="FindTablenamesBtn_Click"/>
                          <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
                          <Button Name="TableViewerBtn" Grid.Row="1" Grid.Column="2" Content="View Table Data" VerticalAlignment="Top" Margin="0,0,0,0" Padding="10, 5" HorizontalAlignment="Stretch"/>
                     </StackPanel>
@@ -68,7 +68,7 @@
                                                   <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
                                              </Style>
                                         </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Field Names" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                        <GridViewColumnHeader Content="Field Name" PreviewMouseMove="GridView_PreviewMouseMove"/>
                                    </GridViewColumn>
 
                                    <!--datatype column -->
@@ -78,9 +78,9 @@
                                                   <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
                                              </Style>
                                         </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Data Type" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                        <GridViewColumnHeader Content="Data Type" PreviewMouseMove="GridView_PreviewMouseMove"/>
                                    </GridViewColumn>
-                                   
+
                                    <!--Ordinal position column -->
                                    <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
                                         <GridViewColumn.HeaderContainerStyle>
@@ -88,7 +88,7 @@
                                                   <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
                                              </Style>
                                         </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                        <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="GridView_PreviewMouseMove"/>
                                    </GridViewColumn>
 
                                    <!--is nullable column-->
@@ -98,7 +98,7 @@
                                                   <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
                                              </Style>
                                         </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                        <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="GridView_PreviewMouseMove"/>
                                    </GridViewColumn>
 
                                    <!--description column-->
@@ -108,16 +108,89 @@
                                                   <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
                                              </Style>
                                         </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Column Description" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
+                                        <GridViewColumnHeader Content="Column Description" PreviewMouseMove="GridView_PreviewMouseMove"/>
                                    </GridViewColumn>
 
                               </GridView>
                          </ListView.View>
                     </ListView>
-                    <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="FindFieldsBackBtn_Click"/>
-                    <!--<TextBox Name="TablenameInputBox" HorizontalAlignment="Center" TextWrapping="NoWrap" Margin="0,0,0,0" Text="" VerticalAlignment="Top" Width="171" Grid.Row="1" Grid.Column="0"/> -->
+                    <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
                     <ComboBox Name="TablenamesCombobox" SelectionChanged="TablenamesCombobox_SelectionChanged" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top" Width="171"/>
+               </Grid>
+          </TabItem>
 
+          <TabItem Name="TableNames" Header="TableNames">
+               <Grid>
+                    <Grid.ColumnDefinitions>
+                         <ColumnDefinition Width="0.7*"/>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="*"/>
+                         <ColumnDefinition Width="0.2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                         <RowDefinition Height="0.8*"/>
+                         <RowDefinition Height="5*"/>
+                         <RowDefinition Height="0.8*"/>
+                    </Grid.RowDefinitions>
+                    <ListView Name="Tablenames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" KeyDown="Fieldnames_ListView_KeyDown">
+                         <ListView.View>
+                              <GridView x:Name="TableNames_GridView" AllowsColumnReorder="False">
+                                   <!--tablename column -->
+                                   <GridViewColumn DisplayMemberBinding="{Binding TableName}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Table Name" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                   </GridViewColumn>
+
+                                   <!--Ordinal position column -->
+                                   <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                   </GridViewColumn>
+
+                                   <!--Data type position column -->
+                                   <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Data Type" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                   </GridViewColumn>
+                                   
+                                   <!--isnullable position column -->
+                                   <GridViewColumn DisplayMemberBinding="{Binding IsNullable}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                   </GridViewColumn>
+
+                                   <!--Description position column -->
+                                   <GridViewColumn DisplayMemberBinding="{Binding Description}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
+                                        <GridViewColumnHeader Content="Description" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                   </GridViewColumn>
+                                   
+                              </GridView>
+                         </ListView.View>
+                    </ListView>
+
+                    <Button Name="FindTablesBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
+                    <ComboBox SelectionChanged="FieldnameEntry_SelectionChanged" Name="FieldnameEntry" IsEditable="True" Margin="0,49,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="154" Grid.RowSpan="2"/>
                </Grid>
           </TabItem>
 

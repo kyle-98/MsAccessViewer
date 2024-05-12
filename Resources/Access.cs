@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,6 +36,29 @@ namespace MSAccessViewer.Resources
           {
                return string.Compare(FieldName, other.FieldName, StringComparison.Ordinal);
           }
+     }
+
+     public class AccessTableField : IComparable<AccessTableField>
+     {
+          public string TableName { get; set; }
+          public string OrdinalPosition { get; set; }
+          public string DataType { get; set; }
+          public string IsNullable { get; set; }
+          public string Description { get; set; }
+
+          public AccessTableField(string tablename, string ordpositon, string datatype, string isnullable, string desc)
+          {
+               TableName = tablename;
+               OrdinalPosition = ordpositon;
+               DataType = datatype;
+               IsNullable = isnullable;
+               Description = desc;
+          }
+          public int CompareTo(AccessTableField other)
+          {
+               return string.Compare(TableName, other.TableName, StringComparison.Ordinal);
+          }
+
      }
 
 
@@ -99,7 +124,18 @@ namespace MSAccessViewer.Resources
                {
                     foreach (DataRow row in schema.Rows)
                     {
-                         if (row != null) { fields.Add(new AccessField(row["COLUMN_NAME"].ToString(), GetDataTypeName(Convert.ToInt32(row["DATA_TYPE"])), row["ORDINAL_POSITION"].ToString(), row["IS_NULLABLE"].ToString(), row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : row["DESCRIPTION"].ToString())); }
+                         if (row != null) 
+                         { 
+                              fields.Add(
+                                   new AccessField(
+                                        row["COLUMN_NAME"].ToString(), 
+                                        GetDataTypeName(Convert.ToInt32(row["DATA_TYPE"])), 
+                                        row["ORDINAL_POSITION"].ToString(), 
+                                        row["IS_NULLABLE"].ToString(), 
+                                        row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : row["DESCRIPTION"].ToString()
+                                   )
+                              ); 
+                         }
                     }
                }
                return fields;
@@ -112,6 +148,58 @@ namespace MSAccessViewer.Resources
                DataRow[] table_rows = schema.Select("TABLE_TYPE = 'TABLE'");
                foreach (DataRow row in table_rows) { tablenames.Add(row["TABLE_NAME"].ToString()); }
                return tablenames;
+          }
+
+          public static List<string> GetAllFieldNames(OleDbConnection access_connection)
+          {
+               List<string> field_names = new();
+               DataTable schema = access_connection.GetSchema("Tables");
+               DataRow[] table_rows = schema.Select("TABLE_TYPE = 'TABLE'");
+               foreach (DataRow row in table_rows)
+               {
+                    if(row != null) 
+                    {
+                         DataTable cols_schema = access_connection.GetSchema("Columns", new[] { null, null, row["TABLE_NAME"].ToString() });
+                         foreach(DataRow cs_rows in cols_schema.Rows)
+                         {
+                              if (!field_names.Contains(cs_rows["COLUMN_NAME"].ToString()))
+                              {
+                                   field_names.Add(cs_rows["COLUMN_NAME"].ToString());
+                              }
+                         }
+                    }
+               }
+               return field_names;
+          }
+
+          public static ObservableCollection<AccessTableField> GetTablenameViaField(OleDbConnection access_connection, string field_name)
+          {
+               ObservableCollection<AccessTableField> table_names = new();
+               DataTable schema = access_connection.GetSchema("Tables");
+               DataRow[] table_rows = schema.Select("TABLE_TYPE = 'TABLE'");
+               foreach (DataRow row in table_rows)
+               {
+                    if (row != null)
+                    {
+                         DataTable col_schema = access_connection.GetSchema("Columns", new[] { null, null, row["TABLE_NAME"].ToString(), field_name });
+                         if(col_schema.Rows.Count == 1) 
+                         {
+                              foreach(DataRow col_row in col_schema.Rows)
+                              {
+                                   table_names.Add(
+                                        new AccessTableField(
+                                             row["TABLE_NAME"].ToString(),
+                                             col_row["ORDINAL_POSITION"].ToString(),
+                                             GetDataTypeName(Convert.ToInt32(col_row["DATA_TYPE"])),
+                                             col_row["IS_NULLABLE"].ToString(),
+                                             col_row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : col_row["DESCRIPTION"].ToString()
+                                        )
+                                   );
+                              }
+                         }
+                    }
+               }
+               return table_names;
           }
 
           

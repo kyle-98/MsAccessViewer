@@ -37,7 +37,7 @@ namespace MSAccessViewer
           }
 
           //Take user back to the main page of the application from the ViewController.SelectedIndex = 1
-          private void FindFieldsBackBtn_Click(object sender, RoutedEventArgs e)
+          private void BackBtn_Click(object sender, RoutedEventArgs e)
           {
                ViewController.SelectedIndex = 0;
           }
@@ -50,7 +50,7 @@ namespace MSAccessViewer
                ViewController.SelectedIndex = 1;
           }
 
-          private void Fieldnames_GridView_PrviewMouseMove(object sender, MouseEventArgs e)
+          private void GridView_PreviewMouseMove(object sender, MouseEventArgs e)
           {
                e.Handled = true;
           }
@@ -69,7 +69,7 @@ namespace MSAccessViewer
           private void SortItems(string sort_by, ListSortDirection direction, ListView list_view)
           {
                ICollectionView data_view = CollectionViewSource.GetDefaultView(list_view.ItemsSource);
-
+               if (data_view == null) { return; }
                data_view.SortDescriptions.Clear();
                SortDescription sort_desc = new(sort_by, direction);
                data_view.SortDescriptions.Add(sort_desc);
@@ -133,6 +133,30 @@ namespace MSAccessViewer
                          Clipboard.SetText(clipboard_data);
                     }
                }
+          }
+
+          private void FindTablenamesBtn_Click(object sender, RoutedEventArgs e)
+          {
+               FieldnameEntry.ItemsSource = Access.GetAllFieldNames(access_connection);
+               FieldnameEntry.SelectedIndex = 0;
+               ViewController.SelectedIndex = 2;
+          }
+
+          private void FieldnameEntry_SelectionChanged(object sender, RoutedEventArgs e)
+          {
+               if(FieldnameEntry.SelectedItem != null && FieldnameEntry.SelectedItem.ToString() != string.Empty) 
+               {
+                    Tablenames_ListView.ItemsSource = Access.GetTablenameViaField(access_connection, FieldnameEntry.SelectedItem.ToString());
+
+                    foreach (GridViewColumn column in TableNames_GridView.Columns)
+                    {
+                         if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
+                         column.Width = double.NaN;
+                    }
+               }
+               else { Tablenames_ListView.ItemsSource = null; }
+               
+
           }
      }
 }
