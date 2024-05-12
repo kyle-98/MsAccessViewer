@@ -5,12 +5,11 @@ using System.Text;
 using System.Windows;
 using System.Data.OleDb;
 using MSAccessViewer.Resources;
-using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace MSAccessViewer
 {
@@ -76,6 +75,15 @@ namespace MSAccessViewer
                data_view.Refresh();
           }
 
+          //get the listview where the column the user clicked exists in
+          private ListView FindListViewFromHeader(GridViewColumnHeader header)
+          {
+               DependencyObject parent = VisualTreeHelper.GetParent(header);
+               while(parent != null && parent is not ListView) { parent = VisualTreeHelper.GetParent(parent); }
+               return parent as ListView;
+          }
+
+
           //handle click event on column headers
           private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
           {
@@ -95,7 +103,7 @@ namespace MSAccessViewer
                }
                var column_binding = header_clicked.Column.DisplayMemberBinding as Binding;
                var sort_by = column_binding?.Path.Path ?? header_clicked.Column.Header as string;
-               SortItems(sort_by, direction, Fieldnames_ListView);
+               SortItems(sort_by, direction, FindListViewFromHeader(header_clicked));
                if(direction == ListSortDirection.Ascending)
                {
                     header_clicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
