@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Data;
+using System.Collections.ObjectModel;
 
 namespace MSAccessViewer
 {
@@ -46,6 +48,7 @@ namespace MSAccessViewer
           {
                TablenamesCombobox.ItemsSource = Access.GetAccessTableNames(access_connection);
                TablenamesCombobox.SelectedIndex = 0;
+               PopulateListViewColumnHeader();
                ViewController.SelectedIndex = 1;
           }
 
@@ -54,14 +57,85 @@ namespace MSAccessViewer
                e.Handled = true;
           }
 
+
+          private void GenerateColumn(string column_name, string binding_name, GridView grid_view)
+          {
+               Binding binding = new(binding_name);
+               Style header_style = new(typeof(GridViewColumnHeader));
+               header_style.Setters.Add(
+                    new EventSetter(
+                         GridViewColumnHeader.ClickEvent,
+                         new RoutedEventHandler(
+                              GridViewColumnHeader_Click
+                         )
+                    )
+               );
+               GridViewColumnHeader column_header = new GridViewColumnHeader();
+               column_header.Content = column_name;
+               column_header.PreviewMouseMove += GridView_PreviewMouseMove;
+
+               GridViewColumn grid_column = new();
+               grid_column.DisplayMemberBinding = binding;
+               grid_column.HeaderContainerStyle = header_style;
+               grid_column.Header = column_header;
+               grid_view.Columns.Add(grid_column);
+          }
+
+
+          private void PopulateListViewColumnHeader()
+          {
+               FieldNames_GridView.Columns.Clear();
+               if (Table_ColumnCombobox.SelectedIndex == 0)
+               {
+                    if (TablenamesCombobox.SelectedItem != null && TablenamesCombobox.SelectedItem.ToString() != string.Empty)
+                    {
+                         DataTable access_dt = Access.GetDatatable(access_connection, TablenamesCombobox.SelectedItem.ToString());
+                         foreach (DataColumn column in access_dt.Columns)
+                         {
+                              GenerateColumn(column.ToString(), column.ToString().Replace(" ", ""), FieldNames_GridView);
+                         }
+                    }
+               }
+               else
+               {
+                    GenerateColumn("Field Name", "FieldName", FieldNames_GridView);
+                    GenerateColumn("Data Type", "DataType", FieldNames_GridView);
+                    GenerateColumn("Ordinal Position", "OrdinalPosition", FieldNames_GridView);
+                    GenerateColumn("Is Nullable", "IsNullable", FieldNames_GridView);
+                    GenerateColumn("Description", "Description", FieldNames_GridView);
+               }
+          }
+
+
+
+          private void Table_ColumnCombobox_SelectionChanged(object sender, RoutedEventArgs e)
+          {
+               PopulateListViewColumnHeader();
+          }
+
+
           private void TablenamesCombobox_SelectionChanged(object sender, RoutedEventArgs e)
           {
-               Fieldnames_ListView.ItemsSource = Access.GetFieldNames(access_connection, TablenamesCombobox.SelectedItem.ToString());
-               foreach(GridViewColumn column in FieldNames_GridView.Columns)
+               if(TablenamesCombobox.SelectedItem != null && TablenamesCombobox.SelectedItem.ToString() != string.Empty)
                {
-                    if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
-                    column.Width = double.NaN;
+                    Fieldnames_ListView.ItemsSource = null;
+                    if(Table_ColumnCombobox.SelectedIndex == 0)
+                    {
+                         DataTable access_dt = Access.GetDatatable(access_connection, TablenamesCombobox.SelectedItem.ToString());
+                         Fieldnames_ListView.ItemsSource = access_dt.DefaultView;
+                    }
+                    else
+                    {
+                         Fieldnames_ListView.ItemsSource = Access.GetFieldNames(access_connection, TablenamesCombobox.SelectedItem.ToString());
+                    }
+                    
+                    foreach (GridViewColumn column in FieldNames_GridView.Columns)
+                    {
+                         if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
+                         column.Width = double.NaN;
+                    }
                }
+               else { Fieldnames_ListView.ItemsSource = null; }
           }
 
           //sorting columns based on the header clicked
@@ -164,6 +238,11 @@ namespace MSAccessViewer
                }
                else { Tablenames_ListView.ItemsSource = null; }
                
+
+          }
+
+          private void TableViewerBtn_Click(object sender, RoutedEventArgs e)
+          {
 
           }
      }

@@ -202,6 +202,13 @@ namespace MSAccessViewer.Resources
                return table_names;
           }
 
+          public static DataTable GetDatatable(OleDbConnection access_connection, string tablename) 
+          {
+               OleDbDataAdapter adapter = new($"select * from [{tablename}]", access_connection);
+               DataTable dt = new();
+               adapter.Fill(dt);
+               return dt;
+          }
           
      }
 }
