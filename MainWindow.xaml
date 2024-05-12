@@ -57,13 +57,31 @@
                     <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                          <ListView.View>
                               <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False">
+                                   
                                    <GridViewColumn DisplayMemberBinding="{Binding FieldName}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
                                         <GridViewColumnHeader Content="Field Names" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
+                                        
                                    <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
                                         <GridViewColumnHeader Content="Data Type" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
+                                   
                                    <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
+                                        <GridViewColumn.HeaderContainerStyle>
+                                             <Style TargetType="GridViewColumnHeader">
+                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                             </Style>
+                                        </GridViewColumn.HeaderContainerStyle>
                                         <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="Fieldnames_GridView_PrviewMouseMove"/>
                                    </GridViewColumn>
                               </GridView>

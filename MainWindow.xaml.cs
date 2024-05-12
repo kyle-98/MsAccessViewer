@@ -8,6 +8,9 @@ using MSAccessViewer.Resources;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace MSAccessViewer
 {
@@ -18,6 +21,8 @@ namespace MSAccessViewer
      {
 
           OleDbConnection? access_connection;
+          GridViewColumnHeader _last_header_clicked = null;
+          ListSortDirection _last_direction = ListSortDirection.Ascending;
 
           public MainWindow()
           {
@@ -58,6 +63,54 @@ namespace MSAccessViewer
                     if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
                     column.Width = double.NaN;
                }
+          }
+
+          private void SortItems(string sort_by, ListSortDirection direction, ListView list_view)
+          {
+               ICollectionView data_view = CollectionViewSource.GetDefaultView(list_view.ItemsSource);
+
+               data_view.SortDescriptions.Clear();
+               SortDescription sort_desc = new(sort_by, direction);
+               data_view.SortDescriptions.Add(sort_desc);
+               data_view.Refresh();
+          }
+
+          private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
+          {
+               var header_clicked = e.OriginalSource as GridViewColumnHeader;
+               ListSortDirection direction;
+               if(header_clicked == null) { return; }
+               if(header_clicked.Role == GridViewColumnHeaderRole.Padding) { return; }
+
+               if(header_clicked != _last_header_clicked)
+               {
+                    direction = ListSortDirection.Ascending;
+               }
+               else
+               {
+                    if(_last_direction == ListSortDirection.Ascending) { direction = ListSortDirection.Descending; }
+                    else { direction = ListSortDirection.Ascending; }
+               }
+               var column_binding = header_clicked.Column.DisplayMemberBinding as Binding;
+               var sort_by = column_binding?.Path.Path ?? header_clicked.Column.Header as string;
+               SortItems(sort_by, direction, Fieldnames_ListView);
+               if(direction == ListSortDirection.Ascending)
+               {
+                    header_clicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
+               }
+               else
+               {
+                    header_clicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowDown"] as DataTemplate;
+               }
+
+               if(_last_header_clicked != null && _last_header_clicked != header_clicked)
+               {
+                    _last_header_clicked.Column.HeaderTemplate = null;
+               }
+               _last_header_clicked = header_clicked;
+               _last_direction = direction;
+
+              
           }
      }
 }
