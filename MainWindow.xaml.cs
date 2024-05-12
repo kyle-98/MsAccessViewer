@@ -65,6 +65,7 @@ namespace MSAccessViewer
                }
           }
 
+          //sorting columns based on the header clicked
           private void SortItems(string sort_by, ListSortDirection direction, ListView list_view)
           {
                ICollectionView data_view = CollectionViewSource.GetDefaultView(list_view.ItemsSource);
@@ -75,6 +76,7 @@ namespace MSAccessViewer
                data_view.Refresh();
           }
 
+          //handle click event on column headers
           private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
           {
                var header_clicked = e.OriginalSource as GridViewColumnHeader;
@@ -109,8 +111,28 @@ namespace MSAccessViewer
                }
                _last_header_clicked = header_clicked;
                _last_direction = direction;
+          }
 
-              
+          //copy selected fields to clipboard
+          private void Fieldnames_ListView_KeyDown(object sender, KeyEventArgs e)
+          {
+               if(e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
+               {
+                    dynamic selected_items = Fieldnames_ListView.SelectedItems;
+                    int counter = 0;
+                    if(selected_items.Count > 0)
+                    {
+                         string clipboard_data = string.Empty;
+                         foreach (var item in selected_items)
+                         {
+                              if(selected_items.Count == 1) { clipboard_data = item.FieldName; }
+                              else if(counter == selected_items.Count - 1) { clipboard_data += item.FieldName; }
+                              else { clipboard_data += $"{item.FieldName}\n"; }
+                              counter++;
+                         }
+                         Clipboard.SetText(clipboard_data);
+                    }
+               }
           }
      }
 }
