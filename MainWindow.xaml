@@ -67,12 +67,28 @@
                          </ListView.View>
                     </ListView>
                     <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
-                    <ComboBox Name="TablenamesCombobox" IsEditable="True" SelectionChanged="TablenamesCombobox_SelectionChanged" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Margin="0,80,0,0" VerticalAlignment="Top" Width="171"/>
-                    <Label Content="Select Tablename" HorizontalAlignment="Center" Margin="0,30,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold"/>
+
                     <ComboBox Name="Table_ColumnCombobox" SelectionChanged="Table_ColumnCombobox_SelectionChanged" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="74" SelectedIndex="0">
                          <ComboBoxItem Content="Content"/>
                          <ComboBoxItem Content="Schema"/>
                     </ComboBox>
+
+                    <Grid Grid.Row="1" Grid.Column="0">
+                         <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="0.1*"/>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="0.1*"/>
+                         </Grid.ColumnDefinitions>
+                         <Grid.RowDefinitions>
+                              <RowDefinition Height="*"/>
+                              <RowDefinition Height="3*"/>
+                              <RowDefinition Height="0.5*"/>
+                         </Grid.RowDefinitions>
+                         <Label Content="Select Tablename" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold"/>
+                         <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                         <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </Grid>
+                    
                </Grid>
           </TabItem>
 
