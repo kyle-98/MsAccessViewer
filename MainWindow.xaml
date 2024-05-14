@@ -44,7 +44,7 @@
           </TabItem>
 
           <!--Getting field names of a table page-->
-          <TabItem Header="FieldNames" Name="FieldNames">
+          <TabItem Header="FieldNames" Name="FieldNames" Height="20" VerticalAlignment="Bottom">
                <Grid>
                     <Grid.ColumnDefinitions>
                          <ColumnDefinition Width="0.7*"/>
@@ -57,7 +57,11 @@
                          <RowDefinition Height="5*"/>
                          <RowDefinition Height="0.8*"/>
                     </Grid.RowDefinitions>
-                    <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" KeyDown="Fieldnames_ListView_KeyDown">
+
+
+                    <DataGrid Name="FieldNames_DataGrid" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
+
+                    <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                          <ListView.View>
                               <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False">
 
@@ -89,6 +93,7 @@
                          <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
                     
+
                </Grid>
           </TabItem>
 

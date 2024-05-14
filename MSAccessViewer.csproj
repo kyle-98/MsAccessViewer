@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x86</Platforms>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\kfork\OneDrive\Misc\Visual_Studio\MSAccessViewer\MSAccessViewer\XML Docs\MsAccessViewer.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

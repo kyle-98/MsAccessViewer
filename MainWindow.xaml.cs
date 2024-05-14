@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Data;
 using System.Collections.ObjectModel;
+using System.Windows.Controls.Primitives;
 
 namespace MSAccessViewer
 {
@@ -48,7 +49,6 @@ namespace MSAccessViewer
           private void FindFieldnamesBtn_Click(object sender, RoutedEventArgs e)
           {
                access_tablenames = Access.GetAccessTableNames(access_connection);
-               PopulateListViewColumnHeader();
                ViewController.SelectedIndex = 1;
           }
 
@@ -57,95 +57,33 @@ namespace MSAccessViewer
                e.Handled = true;
           }
 
-
-          private void GenerateColumn(string column_name, string binding_name, GridView grid_view)
-          {
-               Binding binding = new(binding_name);
-               Style header_style = new(typeof(GridViewColumnHeader));
-               header_style.Setters.Add(
-                    new EventSetter(
-                         GridViewColumnHeader.ClickEvent,
-                         new RoutedEventHandler(
-                              GridViewColumnHeader_Click
-                         )
-                    )
-               );
-               GridViewColumnHeader column_header = new GridViewColumnHeader();
-               column_header.Content = column_name;
-               column_header.PreviewMouseMove += GridView_PreviewMouseMove;
-
-               GridViewColumn grid_column = new();
-               grid_column.DisplayMemberBinding = binding;
-               grid_column.HeaderContainerStyle = header_style;
-               grid_column.Header = column_header;
-               grid_view.Columns.Add(grid_column);
-          }
-
-
-          private void PopulateListViewColumnHeader()
-          {
-               FieldNames_GridView.Columns.Clear();
-               if(TablenamesListbox != null)
-               {
-                    if (Table_ColumnCombobox.SelectedIndex == 0)
-                    {
-                         if (TablenamesListbox.SelectedItem != null && TablenamesListbox.SelectedItem.ToString() != string.Empty)
-                         {
-                              DataTable access_dt = Access.GetDatatable(access_connection, TablenamesListbox.SelectedItem.ToString());
-                              foreach (DataColumn column in access_dt.Columns)
-                              {
-                                   GenerateColumn(column.ToString(), column.ToString().Replace(" ", ""), FieldNames_GridView);
-                              }
-                         }
-                    }
-                    else
-                    {
-                         GenerateColumn("Field Name", "FieldName", FieldNames_GridView);
-                         GenerateColumn("Data Type", "DataType", FieldNames_GridView);
-                         GenerateColumn("Ordinal Position", "OrdinalPosition", FieldNames_GridView);
-                         GenerateColumn("Is Nullable", "IsNullable", FieldNames_GridView);
-                         GenerateColumn("Description", "Description", FieldNames_GridView);
-                    }
-               }
-               else { return; }
-          }
-
-
-
+          
           private void PopulateFieldNamesListView()
           {
                if(TablenamesListbox != null)
                {
                     if (TablenamesListbox.SelectedItem != null && TablenamesListbox.SelectedItem.ToString() != string.Empty)
                     {
-                         Fieldnames_ListView.ItemsSource = null;
-                         PopulateListViewColumnHeader();
+                         FieldNames_DataGrid.ItemsSource = null;
                          if (Table_ColumnCombobox.SelectedIndex == 0)
                          {
                               DataTable access_dt = Access.GetDatatable(access_connection, TablenamesListbox.SelectedItem.ToString());
-                              Fieldnames_ListView.ItemsSource = access_dt.DefaultView;
+                              Access.CorrectDataTypes(access_dt, access_connection);
+                              FieldNames_DataGrid.ItemsSource = access_dt.DefaultView;
                          }
                          else
                          {
-                              Fieldnames_ListView.ItemsSource = Access.GetFieldNames(access_connection, TablenamesListbox.SelectedItem.ToString());
-                         }
-
-                         foreach (GridViewColumn column in FieldNames_GridView.Columns)
-                         {
-                              if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
-                              column.Width = double.NaN;
+                              FieldNames_DataGrid.ItemsSource = Access.GetFieldNames(access_connection, TablenamesListbox.SelectedItem.ToString());
                          }
                     }
-                    else { Fieldnames_ListView.ItemsSource = null; }
+                    else { if(FieldNames_DataGrid != null) { FieldNames_DataGrid.ItemsSource = null; } }
                }
                else { return; }
-               
           }
 
 
           private void Table_ColumnCombobox_SelectionChanged(object sender, RoutedEventArgs e)
           {
-               PopulateListViewColumnHeader();
                PopulateFieldNamesListView();
           }
 
@@ -280,7 +218,7 @@ namespace MSAccessViewer
 
           private void TablenamesListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
           {
-               if(TablenamesListbox.SelectedItems.Count == 0) { Fieldnames_ListView.ItemsSource = null; FieldNames_GridView.Columns.Clear(); }
+               if(TablenamesListbox.SelectedItems.Count == 0) { FieldNames_DataGrid.ItemsSource = null; }
                else { PopulateFieldNamesListView(); }
                
           }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.Linq;
@@ -18,12 +19,12 @@ namespace MSAccessViewer.Resources
      {
           public string FieldName { get; set; }
           public string DataType { get; set; }
-          public string OrdinalPosition { get; set; }
+          public int OrdinalPosition { get; set; }
           public string IsNullable { get; set; }
           public string Description { get; set; }
 
 
-          public AccessField(string fieldname, string datatype, string ordposition, string isnullable, string description)
+          public AccessField(string fieldname, string datatype, int ordposition, string isnullable, string description)
           {
                FieldName = fieldname;
                DataType = datatype;
@@ -41,12 +42,12 @@ namespace MSAccessViewer.Resources
      public class AccessTableField : IComparable<AccessTableField>
      {
           public string TableName { get; set; }
-          public string OrdinalPosition { get; set; }
+          public int OrdinalPosition { get; set; }
           public string DataType { get; set; }
           public string IsNullable { get; set; }
           public string Description { get; set; }
 
-          public AccessTableField(string tablename, string ordpositon, string datatype, string isnullable, string desc)
+          public AccessTableField(string tablename, int ordpositon, string datatype, string isnullable, string desc)
           {
                TableName = tablename;
                OrdinalPosition = ordpositon;
@@ -81,6 +82,11 @@ namespace MSAccessViewer.Resources
                }
           }
 
+          /// <summary>
+          /// Convert the numeric datatypes retieved from access into readable data types to present to the user
+          /// </summary>
+          /// <param name="dataType">Numeric data type retrieved from the access column</param>
+          /// <returns>String that is a readable data type</returns>
           private static string GetDataTypeName(int dataType)
           {
                switch (dataType)
@@ -114,7 +120,12 @@ namespace MSAccessViewer.Resources
                }
           }
 
+          /// <summary>
+          /// Close a connection to the access file passed as a system parameter
+          /// </summary>
+          /// <param name="access_connection"><c>OleDbConnection</c> to an access file</param>
           public static void CloseConnection(OleDbConnection access_connection) { access_connection.Close(); }
+
 
           public static ObservableCollection<AccessField> GetFieldNames(OleDbConnection access_connection, string tablename)
           {
@@ -130,7 +141,7 @@ namespace MSAccessViewer.Resources
                                    new AccessField(
                                         row["COLUMN_NAME"].ToString(), 
                                         GetDataTypeName(Convert.ToInt32(row["DATA_TYPE"])), 
-                                        row["ORDINAL_POSITION"].ToString(), 
+                                        Convert.ToInt32(row["ORDINAL_POSITION"]), 
                                         row["IS_NULLABLE"].ToString(), 
                                         row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : row["DESCRIPTION"].ToString()
                                    )
@@ -189,7 +200,7 @@ namespace MSAccessViewer.Resources
                                    table_names.Add(
                                         new AccessTableField(
                                              row["TABLE_NAME"].ToString(),
-                                             col_row["ORDINAL_POSITION"].ToString(),
+                                             Convert.ToInt32(col_row["ORDINAL_POSITION"]),
                                              GetDataTypeName(Convert.ToInt32(col_row["DATA_TYPE"])),
                                              col_row["IS_NULLABLE"].ToString(),
                                              col_row["DESCRIPTION"].ToString() == string.Empty ? "N/A" : col_row["DESCRIPTION"].ToString()
@@ -209,6 +220,67 @@ namespace MSAccessViewer.Resources
                adapter.Fill(dt);
                return dt;
           }
-          
+
+          private static void ConvertColumnType(DataTable dt, string column_name, Type new_type)
+          {
+               DataColumn new_col = new($"{column_name}_new", new_type);
+               dt.Columns.Add(new_col);
+               
+               foreach(DataRow row in dt.Rows) 
+               {
+                    if (row[column_name] != DBNull.Value)
+                    {
+                         row[new_col] = Convert.ChangeType(row[column_name], new_type);
+                    }
+               }
+               dt.Columns.Remove(column_name);
+               new_col.ColumnName = column_name;
+          }
+
+          public static void CorrectDataTypes(DataTable dt, OleDbConnection access_connection)
+          {
+               DataTable schema = access_connection.GetOleDbSchemaTable(OleDbSchemaGuid.Columns, new object[] { null, null, dt.TableName, null });
+               foreach(DataColumn col in dt.Columns)
+               {
+                    foreach(DataRow row in schema.Rows)
+                    {
+                         if (row["COLUMN_NAME"].ToString() == col.ColumnName)
+                         {
+                              string data_type = row["DATA_TYPE"].ToString();
+                              switch(data_type)
+                              {
+                                   case "3": // Long Integer
+                                        ConvertColumnType(dt, col.ColumnName, typeof(int));
+                                        break;
+                                   case "6": // Currency
+                                        ConvertColumnType(dt, col.ColumnName, typeof(decimal));
+                                        break;
+                                   case "7": // Date/Time   
+                                        ConvertColumnType(dt, col.ColumnName, typeof(DateTime));
+                                        break;
+                                   case "4": // Single
+                                        ConvertColumnType(dt, col.ColumnName, typeof(float));
+                                        break;
+                                   case "5": // Double
+                                        ConvertColumnType(dt, col.ColumnName, typeof(double));
+                                        break;
+                                   case "11": // Boolean
+                                        ConvertColumnType(dt, col.ColumnName, typeof(bool));
+                                        break;
+                                   case "17": // Byte
+                                        ConvertColumnType(dt, col.ColumnName, typeof(byte));
+                                        break;
+                                   case "130": // Text
+                                        ConvertColumnType(dt, col.ColumnName, typeof(string));
+                                        break;
+                                   
+                                   default:
+                                        break;
+                              }
+                         }
+                    }
+               }
+          }
+
      }
 }
