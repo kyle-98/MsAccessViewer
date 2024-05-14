@@ -222,5 +222,15 @@ namespace MSAccessViewer
                else { PopulateFieldNamesListView(); }
                
           }
+
+          private void UpdateAccessDataBtn_Click(object sender, RoutedEventArgs e)
+          {
+               if(TablenamesListbox.SelectedItem != null && Table_ColumnCombobox.SelectedIndex == 0)
+               {
+                    Access.UpdateTable(access_connection, TablenamesListbox.SelectedItem.ToString(), ((DataView)FieldNames_DataGrid.ItemsSource).Table);
+
+
+               }
+          }
      }
 }

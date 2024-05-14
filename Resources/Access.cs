@@ -282,5 +282,21 @@ namespace MSAccessViewer.Resources
                }
           }
 
+          public static void UpdateTable(OleDbConnection access_connection, string tablename, DataTable datagrid_dt)
+          {
+               try
+               {
+                    OleDbDataAdapter adapter = new();
+                    OleDbCommandBuilder cmd_builder = new(adapter);
+                    cmd_builder.DataAdapter = adapter;
+                    cmd_builder.QuotePrefix = "[";
+                    cmd_builder.QuoteSuffix = "]";
+                    adapter.SelectCommand = new OleDbCommand($"select * from {tablename}", access_connection);
+                    adapter.Update(datagrid_dt);
+                    MessageBox.Show($"Successfully updated: {tablename}", "Update Success", MessageBoxButton.OK, MessageBoxImage.Information);
+               }
+               catch (Exception ex) { MessageBox.Show($"Error when updating access table:\n{ex.Message}", "Update error", MessageBoxButton.OK, MessageBoxImage.Error); }
+          }
+
      }
 }

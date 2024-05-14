@@ -92,7 +92,8 @@
                          <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                          <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
-                    
+                    <Button Grid.Column="1" Name="UpdateAccessDataBtn" Content="Update Table Data" HorizontalAlignment="Right" Margin="0,0,0,0" Padding="10, 5" VerticalAlignment="Center" Click="UpdateAccessDataBtn_Click"/>
+
 
                </Grid>
           </TabItem>
