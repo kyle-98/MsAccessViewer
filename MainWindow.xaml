@@ -40,6 +40,8 @@
                          <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
                          <Button Name="TableViewerBtn" Grid.Row="1" Grid.Column="2" Content="View Table Data" VerticalAlignment="Top" Margin="0,0,0,0" Padding="10, 5" HorizontalAlignment="Stretch" Click="TableViewerBtn_Click"/>
                     </StackPanel>
+                    <Label ToolTip="Double click to open filepath where the access database is stored" MouseDoubleClick="AccessFilePathLbl_DoubleClick" Grid.Column="1" Content="Access File Path" HorizontalAlignment="Right" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" Cursor="Hand"/>
+                    <TextBox Grid.Column="2" BorderBrush="Transparent" VerticalContentAlignment="Center" Name="AccessFilePathTextbox" Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Center" Height="26" IsReadOnly="True"/>
                </Grid>
           </TabItem>
 
@@ -59,7 +61,7 @@
                     </Grid.RowDefinitions>
 
 
-                    <DataGrid Name="FieldNames_DataGrid" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
+                    <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
 
                     <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                          <ListView.View>
@@ -92,7 +94,7 @@
                          <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                          <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                     </Grid>
-                    <Button Grid.Column="1" Name="UpdateAccessDataBtn" Content="Update Table Data" HorizontalAlignment="Right" Margin="0,0,0,0" Padding="10, 5" VerticalAlignment="Center" Click="UpdateAccessDataBtn_Click"/>
+                    <Button ToolTip="Commits all changes to the ms access table" Grid.Column="1" Name="UpdateAccessDataBtn" Content="Update Table Data" HorizontalAlignment="Right" Margin="0,0,0,0" Padding="10, 5" VerticalAlignment="Center" Click="UpdateAccessDataBtn_Click"/>
 
 
                </Grid>

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Data;
 using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
+using System.Diagnostics;
 
 namespace MSAccessViewer
 {
@@ -26,17 +27,20 @@ namespace MSAccessViewer
           GridViewColumnHeader _last_header_clicked = null;
           ListSortDirection _last_direction = ListSortDirection.Ascending;
           List<string> access_tablenames = new();
+          string[] sys_args;
 
           public MainWindow()
           {
                InitializeComponent();
 
-               string[] sys_args = ((App)Application.Current).AppArgs;
+               sys_args = ((App)Application.Current).AppArgs;
                if (sys_args != null) { access_connection = Access.Connect(sys_args[0]); }
                else { throw new Exception("Could not connect to the access file. It is either not an access file or there was failure upon connecting to it."); }
 
                access_tablenames = Access.GetAccessTableNames(access_connection);
                TablenamesListbox.ItemsSource = access_tablenames;
+
+               AccessFilePathTextbox.Text = sys_args[0];
           }
 
           //Take user back to the main page of the application from the ViewController.SelectedIndex = 1
@@ -231,6 +235,13 @@ namespace MSAccessViewer
 
 
                }
+          }
+
+          private void AccessFilePathLbl_DoubleClick(object sender, RoutedEventArgs e)
+          {
+               string[] path_arr = sys_args[0].Split('\\');
+               Array.Resize(ref path_arr, path_arr.Length - 1);
+               Process.Start("explorer.exe", $"{string.Join('\\', path_arr)}");
           }
      }
 }
