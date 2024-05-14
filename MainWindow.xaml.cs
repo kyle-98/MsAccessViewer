@@ -194,11 +194,6 @@ namespace MSAccessViewer
 
           }
 
-          private void TableViewerBtn_Click(object sender, RoutedEventArgs e)
-          {
-
-          }
-
           private void SearchTablenameBox_TextChanged(object sender, TextChangedEventArgs e)
           {
                string search_text = SearchTablenameInput.Text.ToLower();
