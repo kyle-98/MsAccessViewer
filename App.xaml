@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:MSAccessViewer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/StylesDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
     </Application.Resources>
 </Application>

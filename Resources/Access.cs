@@ -2,16 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Data.Common;
 using System.Data.OleDb;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Media;
+using System.Windows.Controls;
 
 namespace MSAccessViewer.Resources
 {
@@ -297,6 +290,38 @@ namespace MSAccessViewer.Resources
                }
                catch (Exception ex) { MessageBox.Show($"Error when updating access table:\n{ex.Message}", "Update error", MessageBoxButton.OK, MessageBoxImage.Error); }
           }
+
+
+          private static bool DoesColumnExist(OleDbConnection access_connection, string tablename, string columnname)
+          {
+               using(OleDbCommand cmd = new($"select count(*) from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='{tablename}' and COLUMN_NAME='{columnname}'", access_connection))
+               {
+                    return (int)cmd.ExecuteScalar() > 0;
+               }
+          }
+
+
+
+          public static void UpdateTableDefinition(OleDbConnection access_connection, string tablename, DataTable datagrid_dt)
+          {
+               foreach(DataRow row in datagrid_dt.Rows)
+               {
+                    string col_name = row["FieldName"].ToString();
+                    string data_type = row["DataType"].ToString();
+                    string description = row["Description"].ToString();
+                    int ord_pos = Convert.ToInt32(row["OrdinalPosition"]);
+
+                    if(string.IsNullOrEmpty(col_name) || string.IsNullOrEmpty(data_type)) { continue; }
+
+                    bool column_exists = DoesColumnExist(access_connection, tablename, col_name);
+
+                    if(column_exists) { }
+               }
+          }
+
+
+
+
 
      }
 }

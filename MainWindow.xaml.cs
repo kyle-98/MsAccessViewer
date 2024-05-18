@@ -227,16 +227,39 @@ namespace MSAccessViewer
                if(TablenamesListbox.SelectedItem != null && Table_ColumnCombobox.SelectedIndex == 0)
                {
                     Access.UpdateTable(access_connection, TablenamesListbox.SelectedItem.ToString(), ((DataView)FieldNames_DataGrid.ItemsSource).Table);
-
-
                }
           }
 
+          /// <summary>
+          /// Open the file directory where the current access file is stored in
+          /// </summary>
+          /// <param name="sender">Object being passed into the method by a user event</param>
+          /// <param name="e">Event that is triggered based on a user interaction</param>
           private void AccessFilePathLbl_DoubleClick(object sender, RoutedEventArgs e)
           {
                string[] path_arr = sys_args[0].Split('\\');
                Array.Resize(ref path_arr, path_arr.Length - 1);
                Process.Start("explorer.exe", $"{string.Join('\\', path_arr)}");
+          }
+
+          private void UpdateTableDefinition_Click(object sender, RoutedEventArgs e)
+          {
+
+          }
+
+          /// <summary>
+          /// Make sure the user is on the page viewing table data before allowing them to update things
+          /// </summary>
+          /// <param name="sender">Object being passed into the method by a user event</param>
+          /// <param name="e">Event that is triggered based on a user interaction</param>
+          private void CheckTabIndex_TableData(object sender, RoutedEventArgs e)
+          {
+               if(ViewController.SelectedIndex == 1)
+               {
+                    if(Table_ColumnCombobox.SelectedIndex == 0) { UpdateData_Header.IsEnabled = true; UpdateTableDef_Header.IsEnabled = false; }
+                    else { UpdateTableDef_Header.IsEnabled = true; UpdateData_Header.IsEnabled = false; }
+               }
+               else { UpdateData_Header.IsEnabled = false; UpdateTableDef_Header.IsEnabled = false; }
           }
      }
 }

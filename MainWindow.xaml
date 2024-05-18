@@ -5,178 +5,187 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSAccessViewer"
         mc:Ignorable="d"
-        Title="MS Access Viewer" Height="450" Width="800">
+        Title="MS Access Viewer" Height="636" Width="1131" MinWidth="310">
 
      <Window.Resources>
-
+          
      </Window.Resources>
 
-     <TabControl Name="ViewController">
-          <TabControl.ItemContainerStyle>
-               <Style TargetType="{x:Type TabItem}">
-                    <Setter Property="Visibility" Value="Visible"/>
-               </Style>
-          </TabControl.ItemContainerStyle>
 
-          <!--Main page of application-->
-          <TabItem Header="MainPage" Name="MainPage">
-               <Grid>
-                    <Grid.ColumnDefinitions>
-                         <ColumnDefinition Width="*"/>
-                         <ColumnDefinition Width="5*"/>
-                         <ColumnDefinition Width="5*"/>
-                         <ColumnDefinition Width="5*"/>
-                         <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                         <RowDefinition Height="*"/>
-                         <RowDefinition Height="6*"/>
-                         <RowDefinition Height="3*"/>
-                         <RowDefinition Height="3*"/>
-                         <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="1" Grid.Column="2">
-                         <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top" Click="FindTablenamesBtn_Click"/>
-                         <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
-                         <Button Name="TableViewerBtn" Grid.Row="1" Grid.Column="2" Content="View Table Data" VerticalAlignment="Top" Margin="0,0,0,0" Padding="10, 5" HorizontalAlignment="Stretch" Click="TableViewerBtn_Click"/>
-                    </StackPanel>
-                    <Label ToolTip="Double click to open filepath where the access database is stored" MouseDoubleClick="AccessFilePathLbl_DoubleClick" Grid.Column="1" Content="Access File Path" HorizontalAlignment="Right" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" Cursor="Hand"/>
-                    <TextBox Grid.Column="2" BorderBrush="Transparent" VerticalContentAlignment="Center" Name="AccessFilePathTextbox" Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Center" Height="26" IsReadOnly="True"/>
-               </Grid>
-          </TabItem>
+     <DockPanel>
+          <ToolBarTray DockPanel.Dock="Top">
+               <ToolBar Style="{DynamicResource ToolBarStyle}">
+                    <Menu>
+                         <MenuItem Header="Table Data" SubmenuOpened="CheckTabIndex_TableData">
+                              <MenuItem Name="UpdateData_Header" IsEnabled="False" Header="Update Data" Click="UpdateAccessDataBtn_Click"/>
+                              <MenuItem Name="UpdateTableDef_Header" IsEnabled="False" Header="Update Table Definition" Click="UpdateTableDefinition_Click"/>
+                         </MenuItem>
+                    </Menu>
+               </ToolBar>
+          </ToolBarTray>
+          <Grid>
+               <!--main tab control-->
+               <TabControl Name="ViewController">
+                    <TabControl.ItemContainerStyle>
+                         <Style TargetType="{x:Type TabItem}">
+                              <Setter Property="Visibility" Value="Visible"/>
+                         </Style>
+                    </TabControl.ItemContainerStyle>
 
-          <!--Getting field names of a table page-->
-          <TabItem Header="FieldNames" Name="FieldNames" Height="20" VerticalAlignment="Bottom">
-               <Grid>
-                    <Grid.ColumnDefinitions>
-                         <ColumnDefinition Width="0.7*"/>
-                         <ColumnDefinition Width="*"/>
-                         <ColumnDefinition Width="*"/>
-                         <ColumnDefinition Width="0.2*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                         <RowDefinition Height="0.8*"/>
-                         <RowDefinition Height="5*"/>
-                         <RowDefinition Height="0.8*"/>
-                    </Grid.RowDefinitions>
+                    <!--Main page of application-->
+                    <TabItem Header="MainPage" Name="MainPage">
+                         <Grid>
+                              <Grid.ColumnDefinitions>
+                                   <ColumnDefinition Width="*"/>
+                                   <ColumnDefinition Width="5*"/>
+                                   <ColumnDefinition Width="5*"/>
+                                   <ColumnDefinition Width="5*"/>
+                                   <ColumnDefinition Width="*"/>
+                              </Grid.ColumnDefinitions>
+                              <Grid.RowDefinitions>
+                                   <RowDefinition Height="*"/>
+                                   <RowDefinition Height="6*"/>
+                                   <RowDefinition Height="3*"/>
+                                   <RowDefinition Height="3*"/>
+                                   <RowDefinition Height="*"/>
+                              </Grid.RowDefinitions>
+                              <StackPanel Grid.Row="1" Grid.Column="2">
+                                   <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top" Click="FindTablenamesBtn_Click"/>
+                                   <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
+                              </StackPanel>
+                              <Label ToolTip="Double click to open filepath where the access database is stored" MouseDoubleClick="AccessFilePathLbl_DoubleClick" Grid.Column="1" Content="Access File Path" HorizontalAlignment="Right" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" Cursor="Hand"/>
+                              <TextBox Grid.Column="2" BorderBrush="Transparent" VerticalContentAlignment="Center" Name="AccessFilePathTextbox" Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Center" Height="26" IsReadOnly="True"/>
+                         </Grid>
+                    </TabItem>
 
-
-                    <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
-
-                    <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
-                         <ListView.View>
-                              <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False">
-
-
-
-                              </GridView>
-                         </ListView.View>
-                    </ListView>
-                    <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
-
-                    <ComboBox Name="Table_ColumnCombobox" SelectionChanged="Table_ColumnCombobox_SelectionChanged" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="74" SelectedIndex="0">
-                         <ComboBoxItem Content="Content"/>
-                         <ComboBoxItem Content="Schema"/>
-                    </ComboBox>
-
-                    <Grid Grid.Row="1" Grid.Column="0">
-                         <Grid.ColumnDefinitions>
-                              <ColumnDefinition Width="0.1*"/>
-                              <ColumnDefinition Width="*"/>
-                              <ColumnDefinition Width="0.1*"/>
-                         </Grid.ColumnDefinitions>
-                         <Grid.RowDefinitions>
-                              <RowDefinition Height="*"/>
-                              <RowDefinition Height="3*"/>
-                              <RowDefinition Height="0.5*"/>
-                         </Grid.RowDefinitions>
-                         <Label Content="Select Tablename" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold"/>
-                         <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                         <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    </Grid>
-                    <Button ToolTip="Commits all changes to the ms access table" Grid.Column="1" Name="UpdateAccessDataBtn" Content="Update Table Data" HorizontalAlignment="Right" Margin="0,0,0,0" Padding="10, 5" VerticalAlignment="Center" Click="UpdateAccessDataBtn_Click"/>
+                    <!--Getting field names of a table page-->
+                    <TabItem Header="FieldNames" Name="FieldNames" Height="20" VerticalAlignment="Bottom">
+                         <Grid>
+                              <Grid.ColumnDefinitions>
+                                   <ColumnDefinition Width="0.7*"/>
+                                   <ColumnDefinition Width="*"/>
+                                   <ColumnDefinition Width="*"/>
+                                   <ColumnDefinition Width="0.2*"/>
+                              </Grid.ColumnDefinitions>
+                              <Grid.RowDefinitions>
+                                   <RowDefinition Height="0.8*"/>
+                                   <RowDefinition Height="5*"/>
+                                   <RowDefinition Height="0.8*"/>
+                              </Grid.RowDefinitions>
 
 
-               </Grid>
-          </TabItem>
+                              <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
 
-          <TabItem Name="TableNames" Header="TableNames">
-               <Grid>
-                    <Grid.ColumnDefinitions>
-                         <ColumnDefinition Width="0.7*"/>
-                         <ColumnDefinition Width="*"/>
-                         <ColumnDefinition Width="*"/>
-                         <ColumnDefinition Width="0.2*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                         <RowDefinition Height="0.8*"/>
-                         <RowDefinition Height="5*"/>
-                         <RowDefinition Height="0.8*"/>
-                    </Grid.RowDefinitions>
-                    <ListView Name="Tablenames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" KeyDown="Fieldnames_ListView_KeyDown">
-                         <ListView.View>
-                              <GridView x:Name="TableNames_GridView" AllowsColumnReorder="False">
-                                   <!--tablename column -->
-                                   <GridViewColumn DisplayMemberBinding="{Binding TableName}" Width="Auto">
-                                        <GridViewColumn.HeaderContainerStyle>
-                                             <Style TargetType="GridViewColumnHeader">
-                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
-                                             </Style>
-                                        </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Table Name" PreviewMouseMove="GridView_PreviewMouseMove"/>
-                                   </GridViewColumn>
+                              <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+                                   <ListView.View>
+                                        <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False"/>
+                                   </ListView.View>
+                              </ListView>
+                              <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
 
-                                   <!--Ordinal position column -->
-                                   <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
-                                        <GridViewColumn.HeaderContainerStyle>
-                                             <Style TargetType="GridViewColumnHeader">
-                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
-                                             </Style>
-                                        </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="GridView_PreviewMouseMove"/>
-                                   </GridViewColumn>
+                              <ComboBox Name="Table_ColumnCombobox" SelectionChanged="Table_ColumnCombobox_SelectionChanged" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="74" SelectedIndex="0">
+                                   <ComboBoxItem Content="Content"/>
+                                   <ComboBoxItem Content="Schema"/>
+                              </ComboBox>
 
-                                   <!--Data type position column -->
-                                   <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
-                                        <GridViewColumn.HeaderContainerStyle>
-                                             <Style TargetType="GridViewColumnHeader">
-                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
-                                             </Style>
-                                        </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Data Type" PreviewMouseMove="GridView_PreviewMouseMove"/>
-                                   </GridViewColumn>
+                              <Grid Grid.Row="1" Grid.Column="0">
+                                   <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.1*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="0.1*"/>
+                                   </Grid.ColumnDefinitions>
+                                   <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="3*"/>
+                                        <RowDefinition Height="0.5*"/>
+                                   </Grid.RowDefinitions>
+                                   <Label Content="Select Tablename" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold"/>
+                                   <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                   <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                              </Grid>
+                         </Grid>
+                    </TabItem>
 
-                                   <!--isnullable position column -->
-                                   <GridViewColumn DisplayMemberBinding="{Binding IsNullable}" Width="Auto">
-                                        <GridViewColumn.HeaderContainerStyle>
-                                             <Style TargetType="GridViewColumnHeader">
-                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
-                                             </Style>
-                                        </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="GridView_PreviewMouseMove"/>
-                                   </GridViewColumn>
+                    <TabItem Name="TableNames" Header="TableNames">
+                         <Grid>
+                              <Grid.ColumnDefinitions>
+                                   <ColumnDefinition Width="0.7*"/>
+                                   <ColumnDefinition Width="*"/>
+                                   <ColumnDefinition Width="*"/>
+                                   <ColumnDefinition Width="0.2*"/>
+                              </Grid.ColumnDefinitions>
+                              <Grid.RowDefinitions>
+                                   <RowDefinition Height="0.8*"/>
+                                   <RowDefinition Height="5*"/>
+                                   <RowDefinition Height="0.8*"/>
+                              </Grid.RowDefinitions>
+                              <ListView Name="Tablenames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" KeyDown="Fieldnames_ListView_KeyDown">
+                                   <ListView.View>
+                                        <GridView x:Name="TableNames_GridView" AllowsColumnReorder="False">
+                                             <!--tablename column -->
+                                             <GridViewColumn DisplayMemberBinding="{Binding TableName}" Width="Auto">
+                                                  <GridViewColumn.HeaderContainerStyle>
+                                                       <Style TargetType="GridViewColumnHeader">
+                                                            <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                                       </Style>
+                                                  </GridViewColumn.HeaderContainerStyle>
+                                                  <GridViewColumnHeader Content="Table Name" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                             </GridViewColumn>
 
-                                   <!--Description position column -->
-                                   <GridViewColumn DisplayMemberBinding="{Binding Description}" Width="Auto">
-                                        <GridViewColumn.HeaderContainerStyle>
-                                             <Style TargetType="GridViewColumnHeader">
-                                                  <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
-                                             </Style>
-                                        </GridViewColumn.HeaderContainerStyle>
-                                        <GridViewColumnHeader Content="Description" PreviewMouseMove="GridView_PreviewMouseMove"/>
-                                   </GridViewColumn>
+                                             <!--Ordinal position column -->
+                                             <GridViewColumn DisplayMemberBinding="{Binding OrdinalPosition}" Width="Auto">
+                                                  <GridViewColumn.HeaderContainerStyle>
+                                                       <Style TargetType="GridViewColumnHeader">
+                                                            <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                                       </Style>
+                                                  </GridViewColumn.HeaderContainerStyle>
+                                                  <GridViewColumnHeader Content="Ordinal Position" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                             </GridViewColumn>
 
-                              </GridView>
-                         </ListView.View>
-                    </ListView>
+                                             <!--Data type position column -->
+                                             <GridViewColumn DisplayMemberBinding="{Binding DataType}" Width="Auto">
+                                                  <GridViewColumn.HeaderContainerStyle>
+                                                       <Style TargetType="GridViewColumnHeader">
+                                                            <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                                       </Style>
+                                                  </GridViewColumn.HeaderContainerStyle>
+                                                  <GridViewColumnHeader Content="Data Type" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                             </GridViewColumn>
 
-                    <Button Name="FindTablesBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
-                    <ComboBox SelectionChanged="FieldnameEntry_SelectionChanged" Name="FieldnameEntry" Grid.Column="0" Grid.Row="1" IsEditable="True" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="154" />
-                    <Label Content="Enter Field Name" HorizontalAlignment="Center" Margin="0,30,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold"/>
-               </Grid>
-          </TabItem>
+                                             <!--isnullable position column -->
+                                             <GridViewColumn DisplayMemberBinding="{Binding IsNullable}" Width="Auto">
+                                                  <GridViewColumn.HeaderContainerStyle>
+                                                       <Style TargetType="GridViewColumnHeader">
+                                                            <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                                       </Style>
+                                                  </GridViewColumn.HeaderContainerStyle>
+                                                  <GridViewColumnHeader Content="Is Nullable" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                             </GridViewColumn>
 
-     </TabControl>
+                                             <!--Description position column -->
+                                             <GridViewColumn DisplayMemberBinding="{Binding Description}" Width="Auto">
+                                                  <GridViewColumn.HeaderContainerStyle>
+                                                       <Style TargetType="GridViewColumnHeader">
+                                                            <EventSetter Event="Click" Handler="GridViewColumnHeader_Click"/>
+                                                       </Style>
+                                                  </GridViewColumn.HeaderContainerStyle>
+                                                  <GridViewColumnHeader Content="Description" PreviewMouseMove="GridView_PreviewMouseMove"/>
+                                             </GridViewColumn>
+
+                                        </GridView>
+                                   </ListView.View>
+                              </ListView>
+
+                              <Button Name="FindTablesBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
+                              <ComboBox SelectionChanged="FieldnameEntry_SelectionChanged" Name="FieldnameEntry" Grid.Column="0" Grid.Row="1" IsEditable="True" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="212" />
+                              <Label Content="Enter Field Name" HorizontalAlignment="Center" Margin="0,30,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold"/>
+                         </Grid>
+                    </TabItem>
+                    <Viewbox/>
+
+               </TabControl>
+          </Grid>
+     </DockPanel>
 
 
 
