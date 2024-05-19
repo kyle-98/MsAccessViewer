@@ -17,8 +17,8 @@
                <ToolBar Style="{DynamicResource ToolBarStyle}">
                     <Menu>
                          <MenuItem Header="Table Data" SubmenuOpened="CheckTabIndex_TableData">
-                              <MenuItem Name="UpdateData_Header" IsEnabled="False" Header="Update Data" Click="UpdateAccessDataBtn_Click"/>
-                              <MenuItem Name="UpdateTableDef_Header" IsEnabled="False" Header="Update Table Definition" Click="UpdateTableDefinition_Click"/>
+                              <MenuItem Name="UpdateData_Header" IsEnabled="False" Header="Update Data" Click="UpdateAccessDataHeader_Click"/>
+                              <MenuItem Name="ExportTableData_Header" IsEnabled="False" Header="Export Table Data to CSV" Click="ExportTableDataHeader_Click"/>
                          </MenuItem>
                     </Menu>
                </ToolBar>
@@ -74,13 +74,8 @@
                               </Grid.RowDefinitions>
 
 
-                              <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
+                              <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
 
-                              <ListView Name="Fieldnames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
-                                   <ListView.View>
-                                        <GridView x:Name="FieldNames_GridView" AllowsColumnReorder="False"/>
-                                   </ListView.View>
-                              </ListView>
                               <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
 
                               <ComboBox Name="Table_ColumnCombobox" SelectionChanged="Table_ColumnCombobox_SelectionChanged" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="74" SelectedIndex="0">
@@ -119,7 +114,7 @@
                                    <RowDefinition Height="5*"/>
                                    <RowDefinition Height="0.8*"/>
                               </Grid.RowDefinitions>
-                              <ListView Name="Tablenames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" KeyDown="Fieldnames_ListView_KeyDown">
+                              <ListView Name="Tablenames_ListView" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
                                    <ListView.View>
                                         <GridView x:Name="TableNames_GridView" AllowsColumnReorder="False">
                                              <!--tablename column -->

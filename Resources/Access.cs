@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -292,36 +297,106 @@ namespace MSAccessViewer.Resources
           }
 
 
-          private static bool DoesColumnExist(OleDbConnection access_connection, string tablename, string columnname)
+          private static bool DatagridEqualAccessTable(DataTable access_dt, DataTable datagrid_dt)
           {
-               using(OleDbCommand cmd = new($"select count(*) from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='{tablename}' and COLUMN_NAME='{columnname}'", access_connection))
+               if(access_dt.Rows.Count != datagrid_dt.Rows.Count) { return false; }
+               if (access_dt.Columns.Count != datagrid_dt.Columns.Count) { return false; }
+
+               for (int i = 0; i < access_dt.Columns.Count; i++)
                {
-                    return (int)cmd.ExecuteScalar() > 0;
+                    if (
+                         access_dt.Columns[i].ColumnName != datagrid_dt.Columns[i].ColumnName || 
+                         access_dt.Columns[i].DataType != datagrid_dt.Columns[i].DataType
+                    ) { return false; }
                }
+
+               for (int row = 0; row < access_dt.Rows.Count; row++)
+               {
+                    for(int col = 0; col < access_dt.Columns.Count; col++)
+                    {
+                         if (!Equals(access_dt.Rows[row][col], datagrid_dt.Rows[row][col])) { return false; }
+                    }
+               }
+               return true;
+          }
+
+
+          private static void ExportToCSV(DataTable export_table, string filepath)
+          {
+               StringBuilder sb = new();
+               string[] column_names = export_table.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToArray();
+               sb.AppendLine(string.Join(',', column_names));
+
+               foreach(DataRow row in export_table.Rows)
+               {
+                    string[] fields = row.ItemArray.Select(field => field.ToString()).ToArray();
+                    sb.AppendLine(string.Join(',', fields));
+               }
+
+               File.WriteAllText(filepath, sb.ToString());
           }
 
 
 
-          public static void UpdateTableDefinition(OleDbConnection access_connection, string tablename, DataTable datagrid_dt)
+          private static void ShowSaveDialog(DataTable export_table)
           {
-               foreach(DataRow row in datagrid_dt.Rows)
+               SaveFileDialog save_file_dialog = new SaveFileDialog {
+                    Filter = "CSV Files (*.csv|*.csv)",
+                    Title = "Export to CSV",
+                    FileName = "Hentai.csv"
+               };
+
+               if(save_file_dialog.ShowDialog() == true)
                {
-                    string col_name = row["FieldName"].ToString();
-                    string data_type = row["DataType"].ToString();
-                    string description = row["Description"].ToString();
-                    int ord_pos = Convert.ToInt32(row["OrdinalPosition"]);
-
-                    if(string.IsNullOrEmpty(col_name) || string.IsNullOrEmpty(data_type)) { continue; }
-
-                    bool column_exists = DoesColumnExist(access_connection, tablename, col_name);
-
-                    if(column_exists) { }
+                    string filepath = save_file_dialog.FileName;
+                    try 
+                    { 
+                         ExportToCSV(export_table, filepath); 
+                         MessageBoxResult result = MessageBox.Show("Successfully exported table.\n\nWould you like to open the csv?", "Export to CSV", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                         if(result == MessageBoxResult.Yes) { Process.Start("explorer.exe", filepath); }
+                    }
+                    catch(Exception ex) { MessageBox.Show($"Failed to export csv:\n\n{ex.Message}"); }
                }
           }
 
 
+          public static void ExportTableData(OleDbConnection access_connection, string tablename, DataGrid dg)
+          {
+               DataTable access_dt = new();
+               using(OleDbCommand cmd = new($"select * from [{tablename}]", access_connection))
+               {
+                    OleDbDataAdapter adapter = new(cmd);
+                    adapter.Fill(access_dt);
+               }
 
+               DataTable dg_dt = ((DataView)dg.ItemsSource).Table;
 
+               if (DatagridEqualAccessTable(access_dt, dg_dt))
+               {
+                    ShowSaveDialog(access_dt);
+               }
+               else
+               {
+                    MessageBoxResult result = MessageBox.Show(
+                         "The datagrid and the table stored in access do not match.\n\n Would you like to commit your changes in the datagrid to the access file before exporting?\n\nSelecting Yes will update then export\nSelecting No will export without updating\nSelecting Cancel will abort the operation", 
+                         "Export to CSV Warning", 
+                         MessageBoxButton.YesNoCancel, 
+                         MessageBoxImage.Warning
+                    );
+
+                    if(result == MessageBoxResult.Yes) { UpdateTable(access_connection, tablename, dg_dt); }
+
+                    if(result == MessageBoxResult.Cancel) { return; }
+
+                    if(result == MessageBoxResult.Yes || result == MessageBoxResult.No)
+                    {
+                         ShowSaveDialog(access_dt);
+                    }
+                    
+
+               }
+
+          }
 
      }
 }

@@ -43,28 +43,15 @@ namespace MSAccessViewer
                AccessFilePathTextbox.Text = sys_args[0];
           }
 
-          //Take user back to the main page of the application from the ViewController.SelectedIndex = 1
-          private void BackBtn_Click(object sender, RoutedEventArgs e)
-          {
-               ViewController.SelectedIndex = 0;
-          }
+          /*
+           * ----------------------
+           * General helper methods
+           * ----------------------
+          */
 
-          //take user to find fields button back (this button is on the main page)
-          private void FindFieldnamesBtn_Click(object sender, RoutedEventArgs e)
-          {
-               access_tablenames = Access.GetAccessTableNames(access_connection);
-               ViewController.SelectedIndex = 1;
-          }
-
-          private void GridView_PreviewMouseMove(object sender, MouseEventArgs e)
-          {
-               e.Handled = true;
-          }
-
-          
           private void PopulateFieldNamesListView()
           {
-               if(TablenamesListbox != null)
+               if (TablenamesListbox != null)
                {
                     if (TablenamesListbox.SelectedItem != null && TablenamesListbox.SelectedItem.ToString() != string.Empty)
                     {
@@ -80,15 +67,9 @@ namespace MSAccessViewer
                               FieldNames_DataGrid.ItemsSource = Access.GetFieldNames(access_connection, TablenamesListbox.SelectedItem.ToString());
                          }
                     }
-                    else { if(FieldNames_DataGrid != null) { FieldNames_DataGrid.ItemsSource = null; } }
+                    else { if (FieldNames_DataGrid != null) { FieldNames_DataGrid.ItemsSource = null; } }
                }
                else { return; }
-          }
-
-
-          private void Table_ColumnCombobox_SelectionChanged(object sender, RoutedEventArgs e)
-          {
-               PopulateFieldNamesListView();
           }
 
           //sorting columns based on the header clicked
@@ -106,32 +87,49 @@ namespace MSAccessViewer
           private ListView FindListViewFromHeader(GridViewColumnHeader header)
           {
                DependencyObject parent = VisualTreeHelper.GetParent(header);
-               while(parent != null && parent is not ListView) { parent = VisualTreeHelper.GetParent(parent); }
+               while (parent != null && parent is not ListView) { parent = VisualTreeHelper.GetParent(parent); }
                return parent as ListView;
           }
 
+
+          /*
+           * --------------------------
+           * General user event methods
+           * --------------------------
+          */
+
+          //Take user back to the main page of the application from the ViewController.SelectedIndex = 1
+          private void BackBtn_Click(object sender, RoutedEventArgs e)
+          {
+               ViewController.SelectedIndex = 0;
+          }
+
+          private void GridView_PreviewMouseMove(object sender, MouseEventArgs e)
+          {
+               e.Handled = true;
+          }
 
           //handle click event on column headers
           private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
           {
                var header_clicked = e.OriginalSource as GridViewColumnHeader;
                ListSortDirection direction;
-               if(header_clicked == null) { return; }
-               if(header_clicked.Role == GridViewColumnHeaderRole.Padding) { return; }
+               if (header_clicked == null) { return; }
+               if (header_clicked.Role == GridViewColumnHeaderRole.Padding) { return; }
 
-               if(header_clicked != _last_header_clicked)
+               if (header_clicked != _last_header_clicked)
                {
                     direction = ListSortDirection.Ascending;
                }
                else
                {
-                    if(_last_direction == ListSortDirection.Ascending) { direction = ListSortDirection.Descending; }
+                    if (_last_direction == ListSortDirection.Ascending) { direction = ListSortDirection.Descending; }
                     else { direction = ListSortDirection.Ascending; }
                }
                var column_binding = header_clicked.Column.DisplayMemberBinding as Binding;
                var sort_by = column_binding?.Path.Path ?? header_clicked.Column.Header as string;
                SortItems(sort_by, direction, FindListViewFromHeader(header_clicked));
-               if(direction == ListSortDirection.Ascending)
+               if (direction == ListSortDirection.Ascending)
                {
                     header_clicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowUp"] as DataTemplate;
                }
@@ -140,7 +138,7 @@ namespace MSAccessViewer
                     header_clicked.Column.HeaderTemplate = Resources["HeaderTemplateArrowDown"] as DataTemplate;
                }
 
-               if(_last_header_clicked != null && _last_header_clicked != header_clicked)
+               if (_last_header_clicked != null && _last_header_clicked != header_clicked)
                {
                     _last_header_clicked.Column.HeaderTemplate = null;
                }
@@ -148,26 +146,43 @@ namespace MSAccessViewer
                _last_direction = direction;
           }
 
-          //copy selected fields to clipboard
-          private void Fieldnames_ListView_KeyDown(object sender, KeyEventArgs e)
+          
+          private void CheckTabIndex_TableData(object sender, RoutedEventArgs e)
           {
-               if(e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control && Table_ColumnCombobox.SelectedIndex == 1)
+               //make sure user is on the correct tab and has a table selected in the listbox
+               if (ViewController.SelectedIndex == 1 && TablenamesListbox.SelectedItem != null)
                {
-                    dynamic selected_items = Fieldnames_ListView.SelectedItems;
-                    int counter = 0;
-                    if(selected_items.Count > 0)
+                    //content selected in combobox
+                    if (Table_ColumnCombobox.SelectedIndex == 0)
                     {
-                         string clipboard_data = string.Empty;
-                         foreach (var item in selected_items)
-                         {
-                              if(selected_items.Count == 1) { clipboard_data = item.FieldName; }
-                              else if(counter == selected_items.Count - 1) { clipboard_data += item.FieldName; }
-                              else { clipboard_data += $"{item.FieldName}\n"; }
-                              counter++;
-                         }
-                         Clipboard.SetText(clipboard_data);
+                         UpdateData_Header.IsEnabled = true;
+                         ExportTableData_Header.IsEnabled = true;
+                    }
+                    else
+                    {
+                         UpdateData_Header.IsEnabled = false;
+                         ExportTableData_Header.IsEnabled = false;
                     }
                }
+               else
+               {
+                    UpdateData_Header.IsEnabled = false;
+                    ExportTableData_Header.IsEnabled = false;
+               }
+          }
+
+
+          /*
+           * --------------------------------------------------------------
+           * MainPage user event methods (ViewController.SelectedIndex = 0
+           * --------------------------------------------------------------
+          */
+
+          //take user to find fields button back
+          private void FindFieldnamesBtn_Click(object sender, RoutedEventArgs e)
+          {
+               access_tablenames = Access.GetAccessTableNames(access_connection);
+               ViewController.SelectedIndex = 1;
           }
 
           private void FindTablenamesBtn_Click(object sender, RoutedEventArgs e)
@@ -177,21 +192,28 @@ namespace MSAccessViewer
                ViewController.SelectedIndex = 2;
           }
 
-          private void FieldnameEntry_SelectionChanged(object sender, RoutedEventArgs e)
+          /// <summary>
+          /// Open the file directory where the current access file is stored in
+          /// </summary>
+          /// <param name="sender">Object being passed into the method by a user event</param>
+          /// <param name="e">Event that is triggered based on a user interaction</param>
+          private void AccessFilePathLbl_DoubleClick(object sender, RoutedEventArgs e)
           {
-               if(FieldnameEntry.SelectedItem != null && FieldnameEntry.SelectedItem.ToString() != string.Empty) 
-               {
-                    Tablenames_ListView.ItemsSource = Access.GetTablenameViaField(access_connection, FieldnameEntry.SelectedItem.ToString());
+               string[] path_arr = sys_args[0].Split('\\');
+               Array.Resize(ref path_arr, path_arr.Length - 1);
+               Process.Start("explorer.exe", $"{string.Join('\\', path_arr)}");
+          }
 
-                    foreach (GridViewColumn column in TableNames_GridView.Columns)
-                    {
-                         if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
-                         column.Width = double.NaN;
-                    }
-               }
-               else { Tablenames_ListView.ItemsSource = null; }
-               
 
+          /*
+           * ---------------------------------------------------------------
+           * FieldNames user event methods (ViewController.SelectedIndex = 1
+           * ---------------------------------------------------------------
+          */
+
+          private void Table_ColumnCombobox_SelectionChanged(object sender, RoutedEventArgs e)
+          {
+               PopulateFieldNamesListView();
           }
 
           private void SearchTablenameBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -217,12 +239,38 @@ namespace MSAccessViewer
 
           private void TablenamesListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
           {
-               if(TablenamesListbox.SelectedItems.Count == 0) { FieldNames_DataGrid.ItemsSource = null; }
+               if (TablenamesListbox.SelectedItems.Count == 0) { FieldNames_DataGrid.ItemsSource = null; }
                else { PopulateFieldNamesListView(); }
-               
           }
 
-          private void UpdateAccessDataBtn_Click(object sender, RoutedEventArgs e)
+          private void ExportTableDataHeader_Click(object sender, RoutedEventArgs e)
+          {
+               Access.ExportTableData(access_connection, TablenamesListbox.SelectedItem.ToString(), FieldNames_DataGrid);
+          }
+
+
+          /*
+           * ---------------------------------------------------------------
+           * TableNames user event methods (ViewController.SelectedIndex = 2
+           * ---------------------------------------------------------------
+          */
+
+          private void FieldnameEntry_SelectionChanged(object sender, RoutedEventArgs e)
+          {
+               if(FieldnameEntry.SelectedItem != null && FieldnameEntry.SelectedItem.ToString() != string.Empty) 
+               {
+                    Tablenames_ListView.ItemsSource = Access.GetTablenameViaField(access_connection, FieldnameEntry.SelectedItem.ToString());
+
+                    foreach (GridViewColumn column in TableNames_GridView.Columns)
+                    {
+                         if (double.IsNaN(column.Width)) { column.Width = column.ActualWidth; }
+                         column.Width = double.NaN;
+                    }
+               }
+               else { Tablenames_ListView.ItemsSource = null; }
+          }
+
+          private void UpdateAccessDataHeader_Click(object sender, RoutedEventArgs e)
           {
                if(TablenamesListbox.SelectedItem != null && Table_ColumnCombobox.SelectedIndex == 0)
                {
@@ -230,36 +278,7 @@ namespace MSAccessViewer
                }
           }
 
-          /// <summary>
-          /// Open the file directory where the current access file is stored in
-          /// </summary>
-          /// <param name="sender">Object being passed into the method by a user event</param>
-          /// <param name="e">Event that is triggered based on a user interaction</param>
-          private void AccessFilePathLbl_DoubleClick(object sender, RoutedEventArgs e)
-          {
-               string[] path_arr = sys_args[0].Split('\\');
-               Array.Resize(ref path_arr, path_arr.Length - 1);
-               Process.Start("explorer.exe", $"{string.Join('\\', path_arr)}");
-          }
 
-          private void UpdateTableDefinition_Click(object sender, RoutedEventArgs e)
-          {
 
-          }
-
-          /// <summary>
-          /// Make sure the user is on the page viewing table data before allowing them to update things
-          /// </summary>
-          /// <param name="sender">Object being passed into the method by a user event</param>
-          /// <param name="e">Event that is triggered based on a user interaction</param>
-          private void CheckTabIndex_TableData(object sender, RoutedEventArgs e)
-          {
-               if(ViewController.SelectedIndex == 1)
-               {
-                    if(Table_ColumnCombobox.SelectedIndex == 0) { UpdateData_Header.IsEnabled = true; UpdateTableDef_Header.IsEnabled = false; }
-                    else { UpdateTableDef_Header.IsEnabled = true; UpdateData_Header.IsEnabled = false; }
-               }
-               else { UpdateData_Header.IsEnabled = false; UpdateTableDef_Header.IsEnabled = false; }
-          }
      }
 }
