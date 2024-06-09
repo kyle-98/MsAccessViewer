@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Data.OleDb;
 using MSAccessViewer.Resources;
@@ -11,8 +9,6 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Data;
-using System.Collections.ObjectModel;
-using System.Windows.Controls.Primitives;
 using System.Diagnostics;
 
 namespace MSAccessViewer

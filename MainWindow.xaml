@@ -5,27 +5,107 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSAccessViewer"
         mc:Ignorable="d"
-        Title="MS Access Viewer" Height="636" Width="1131" MinWidth="310">
+        Title="MS Access Viewer" Height="636" Width="1131" MinWidth="310" Background="#1c1c1c" Foreground="#F7F7F7F7">
 
      <Window.Resources>
-          
+          <Style TargetType="DataGridRow">
+               <Setter Property="Background" Value="#FF2B2B2B"/>
+               <Setter Property="Foreground" Value="#F7F7F7F7"/>
+          </Style>
+
+          <Style TargetType="DataGridColumnHeader">
+               <Setter Property="Background" Value="#FF5D5D5D" />
+               <Setter Property="Foreground" Value="#F7F7F7F7" />
+               <Setter Property="Padding" Value="10, 5"/>
+               <Setter Property="HorizontalContentAlignment" Value="Center" />
+               <Setter Property="VerticalContentAlignment" Value="Center" />
+               <Setter Property="Template">
+                    <Setter.Value>
+                         <ControlTemplate TargetType="DataGridColumnHeader">
+                              <Grid>
+                                   <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,1,1">
+                                        <Grid>
+                                             <Grid.RowDefinitions>
+                                                  <RowDefinition Height="*" />
+                                             </Grid.RowDefinitions>
+                                             <ContentPresenter Grid.Row="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="5,3,3,3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                             <Path x:Name="SortGlyph" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,17"
+                                          Data="M 0 0 L 4 4 L 8 0 Z" Fill="#FF8C8C8C" Visibility="Collapsed" />
+                                        </Grid>
+                                   </Border>
+                              </Grid>
+                              <ControlTemplate.Triggers>
+                                   <Trigger Property="SortDirection" Value="Ascending">
+                                        <Setter TargetName="SortGlyph" Property="Visibility" Value="Visible" />
+                                        <Setter TargetName="SortGlyph" Property="Data" Value="M 0 4 L 4 0 L 8 4 Z" />
+                                   </Trigger>
+                                   <Trigger Property="SortDirection" Value="Descending">
+                                        <Setter TargetName="SortGlyph" Property="Visibility" Value="Visible" />
+                                        <Setter TargetName="SortGlyph" Property="Data" Value="M 0 0 L 4 4 L 8 0 Z" />
+                                   </Trigger>
+                              </ControlTemplate.Triggers>
+                         </ControlTemplate>
+                    </Setter.Value>
+               </Setter>
+          </Style>
+
+          <Style TargetType="Button" x:Key="RoundedButtonStyle">
+               <Setter Property="Background" Value="#FF313131"/>
+               <Setter Property="Foreground" Value="#F7F7F7F7"/>
+               <Setter Property="Cursor" Value="Arrow"/>
+               <Setter Property="Padding" Value="10, 5"/>
+               <Setter Property="MinWidth" Value="75"/>
+               <Setter Property="MinHeight" Value="30"/>
+               <Setter Property="Template">
+                    <Setter.Value>
+                         <ControlTemplate TargetType="Button">
+                              <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5">
+                                   <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          SnapsToDevicePixels="True"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                              </Border>
+                              <ControlTemplate.Triggers>
+                                   <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#FFAAAAAA"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                   </Trigger>
+                                   <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#FF888888"/>
+                                   </Trigger>
+                                   <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="border" Property="Background" Value="#FFCCCCCC"/>
+                                        <Setter Property="Foreground" Value="#FF888888"/>
+                                   </Trigger>
+                              </ControlTemplate.Triggers>
+                         </ControlTemplate>
+                    </Setter.Value>
+               </Setter>
+          </Style>
+
      </Window.Resources>
 
 
      <DockPanel>
-          <ToolBarTray DockPanel.Dock="Top">
-               <ToolBar Style="{DynamicResource ToolBarStyle}">
-                    <Menu>
-                         <MenuItem Header="Table Data" SubmenuOpened="CheckTabIndex_TableData">
-                              <MenuItem Name="UpdateData_Header" IsEnabled="False" Header="Update Data" Click="UpdateAccessDataHeader_Click"/>
-                              <MenuItem Name="ExportTableData_Header" IsEnabled="False" Header="Export Table Data to CSV" Click="ExportTableDataHeader_Click"/>
+          <ToolBarTray DockPanel.Dock="Top" Background="#262626">
+               <ToolBar Style="{DynamicResource ToolBarStyle}" Background="#262626" BorderBrush="{x:Null}" BorderThickness="0">
+                    <Menu Background="#262626" BorderBrush="Transparent" BorderThickness="0">
+                         <MenuItem Style="{StaticResource MenuItemStyle1}" Background="#262626" BorderBrush="Transparent" BorderThickness="0" Foreground="#F7F7F7F7" Header="Table Data" SubmenuOpened="CheckTabIndex_TableData">
+                              <MenuItem Style="{StaticResource MenuItemStyle1}" Name="UpdateData_Header" ToolTip="This only works with tables that have a primary key" IsEnabled="False" Header="Update Data" Click="UpdateAccessDataHeader_Click"/>
+                              <MenuItem Style="{StaticResource MenuItemStyle1}" Name="ExportTableData_Header" IsEnabled="False" Header="Export Table Data to CSV" Click="ExportTableDataHeader_Click"/>
                          </MenuItem>
                     </Menu>
                </ToolBar>
           </ToolBarTray>
           <Grid>
                <!--main tab control-->
-               <TabControl Name="ViewController">
+               <TabControl Name="ViewController"  Background="#1c1c1c" Foreground="#F7F7F7F7" BorderBrush="{x:Null}">
                     <TabControl.ItemContainerStyle>
                          <Style TargetType="{x:Type TabItem}">
                               <Setter Property="Visibility" Value="Visible"/>
@@ -50,11 +130,11 @@
                                    <RowDefinition Height="*"/>
                               </Grid.RowDefinitions>
                               <StackPanel Grid.Row="1" Grid.Column="2">
-                                   <Button Name="FindTablenamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" Padding="10, 5" VerticalAlignment="Top" Click="FindTablenamesBtn_Click"/>
-                                   <Button Name="FindFieldnamesBtn" Grid.Row="1" Grid.Column="2" Content="Find Fieldnames via Tablename" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
+                                   <Button Name="FindTablenamesBtn" Style="{StaticResource RoundedButtonStyle}" BorderBrush="{x:Null}" Background="#FF313131" Foreground="#F7F7F7" Grid.Row="1" Grid.Column="2" Content="Find Tables via Fieldname" Margin="0,0,0,10" VerticalAlignment="Top" Click="FindTablenamesBtn_Click"/>
+                                   <Button Name="FindFieldnamesBtn" Style="{StaticResource RoundedButtonStyle}" BorderBrush="{x:Null}" Background="#FF313131" Foreground="#F7F7F7" Grid.Row="1" Grid.Column="2" Content="Table Viewer" VerticalAlignment="Top" Margin="0,0,0,10" Padding="10, 5" HorizontalAlignment="Stretch" Click="FindFieldnamesBtn_Click"/>
                               </StackPanel>
-                              <Label ToolTip="Double click to open filepath where the access database is stored" MouseDoubleClick="AccessFilePathLbl_DoubleClick" Grid.Column="1" Content="Access File Path" HorizontalAlignment="Right" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" Cursor="Hand"/>
-                              <TextBox Grid.Column="2" BorderBrush="Transparent" VerticalContentAlignment="Center" Name="AccessFilePathTextbox" Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Center" Height="26" IsReadOnly="True"/>
+                              <Label Foreground="#F7F7F7" ToolTip="Double click to open filepath where the access database is stored" MouseDoubleClick="AccessFilePathLbl_DoubleClick" Grid.Column="1" Content="Access File Path" HorizontalAlignment="Right" Margin="0,0,0,0" Grid.Row="2" VerticalAlignment="Center" Cursor="Hand"/>
+                              <TextBox Background="#1c1c1c" Foreground="#F7F7F7" Grid.Column="2" BorderBrush="Transparent" VerticalContentAlignment="Center" Name="AccessFilePathTextbox" Margin="0,0,0,0" Grid.Row="2" TextWrapping="NoWrap" Text="" VerticalAlignment="Center" Height="26" IsReadOnly="True"/>
                          </Grid>
                     </TabItem>
 
@@ -74,9 +154,9 @@
                               </Grid.RowDefinitions>
 
 
-                              <DataGrid Name="FieldNames_DataGrid" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
+                              <DataGrid Name="FieldNames_DataGrid" BorderBrush="{x:Null}" Background="#FF3A3A3A" Foreground="#F7F7F7" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserReorderColumns="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Panel.ZIndex="1"/>
 
-                              <Button Name="FindFieldsBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
+                              <Button Name="FindFieldsBackBtn" Style="{StaticResource RoundedButtonStyle}" BorderBrush="{x:Null}" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
 
                               <ComboBox Name="Table_ColumnCombobox" SelectionChanged="Table_ColumnCombobox_SelectionChanged" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="74" SelectedIndex="0">
                                    <ComboBoxItem Content="Content"/>
@@ -94,9 +174,9 @@
                                         <RowDefinition Height="3*"/>
                                         <RowDefinition Height="0.5*"/>
                                    </Grid.RowDefinitions>
-                                   <Label Content="Select Tablename" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold"/>
-                                   <TextBox Name="SearchTablenameInput" HorizontalAlignment="Stretch" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,0,0" Grid.Row="0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
-                                   <ListBox Name="TablenamesListbox" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                   <Label Foreground="#F7F7F7" Content="Select Tablename" HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" FontWeight="Bold"/>
+                                   <TextBox Name="SearchTablenameInput" VerticalContentAlignment="Center" Background="#FF3A3A3A" Foreground="#F7F7F7" BorderBrush="{x:Null}" TextChanged="SearchTablenameBox_TextChanged" Grid.Column="1" Margin="0,30,23,0" Grid.Row="0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="24"/>
+                                   <ListBox Name="TablenamesListbox" Background="#FF3A3A3A" Foreground="#F7F7F7" BorderBrush="{x:Null}" SelectionChanged="TablenamesListbox_SelectionChanged" Grid.Row="1" Grid.Column="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                               </Grid>
                          </Grid>
                     </TabItem>
@@ -171,9 +251,9 @@
                                    </ListView.View>
                               </ListView>
 
-                              <Button Name="FindTablesBackBtn" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
+                              <Button Name="FindTablesBackBtn" Style="{StaticResource RoundedButtonStyle}"  BorderBrush="{x:Null}" Content="Back" HorizontalAlignment="Center" Padding="10, 5" Margin="0,0,0,0" Grid.Row="0" VerticalAlignment="Center" Click="BackBtn_Click"/>
                               <ComboBox SelectionChanged="FieldnameEntry_SelectionChanged" Name="FieldnameEntry" Grid.Column="0" Grid.Row="1" IsEditable="True" Margin="0,80,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="212" />
-                              <Label Content="Enter Field Name" HorizontalAlignment="Center" Margin="0,30,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold"/>
+                              <Label Content="Enter Field Name" Foreground="#F7F7F7F7" HorizontalAlignment="Center" Margin="0,30,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold"/>
                          </Grid>
                     </TabItem>
                     <Viewbox/>
